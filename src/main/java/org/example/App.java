@@ -15,9 +15,9 @@ import java.util.concurrent.TimeUnit;
 
 public class App 
 {
-    static PrometheusMeterRegistry prometheusMeterRegistry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-    static Counter requests = prometheusMeterRegistry.counter("requests");
-    static Timer timer = Timer
+    public static PrometheusMeterRegistry prometheusMeterRegistry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+    public static Counter requests = prometheusMeterRegistry.counter("requests");
+    public static Timer timer = Timer
             .builder("test.timer")
             .publishPercentiles(0.3,0.5,0.95)
             .publishPercentileHistogram()
@@ -41,25 +41,10 @@ public class App
         }
     }
 
-    public static void randomDelay() throws InterruptedException
-    {
-        Timer.Sample sample = Timer.start(prometheusMeterRegistry);
-        Random random = new Random();
-        Thread.sleep(random.nextInt(1001));
-        sample.stop(prometheusMeterRegistry.timer("test.timer"));
-    }
-    public static void run() throws InterruptedException
-    {
-        while(true)
-        {
-            requests.increment();
-            randomDelay();
-        }
-
-    }
     public static void main( String[] args ) throws InterruptedException
     {
         initEndPoint();
-        run();
+        Runner runner = new Runner();
+        runner.run();
     }
 }
